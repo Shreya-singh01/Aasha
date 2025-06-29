@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
-import { Calendar, MapPin, User, GraduationCap, Briefcase, Home } from 'lucide-react'
+import { Calendar, MapPin, User, GraduationCap, Briefcase, Home, X } from 'lucide-react'
 
 interface SurvivorStory {
   id: string
@@ -81,6 +81,19 @@ export default function SurvivorStories() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState<string>("all")
   const [selectedStory, setSelectedStory] = useState<SurvivorStory | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newStory, setNewStory] = useState<Omit<SurvivorStory, 'id'>>({
+    rescueDate: "",
+    location: "",
+    exploitationType: "sex",
+    duration: "",
+    currentStatus: "",
+    aspirations: "",
+    livingConditions: "",
+    age: 0,
+    gender: "",
+    source: "",
+  })
 
   const filteredStories = stories.filter((story) => {
     const matchesSearch =
@@ -89,6 +102,56 @@ export default function SurvivorStories() {
     const matchesFilter = filterType === "all" || story.exploitationType === filterType
     return matchesSearch && matchesFilter
   })
+
+  const handleInputChange = (field: keyof Omit<SurvivorStory, 'id'>, value: any) => {
+    setNewStory(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Create new story with generated ID
+    const storyToAdd: SurvivorStory = {
+      ...newStory,
+      id: (stories.length + 1).toString()
+    }
+    
+    // Add to stories array
+    setStories(prev => [storyToAdd, ...prev])
+    
+    // Reset form and close modal
+    setNewStory({
+      rescueDate: "",
+      location: "",
+      exploitationType: "sex",
+      duration: "",
+      currentStatus: "",
+      aspirations: "",
+      livingConditions: "",
+      age: 0,
+      gender: "",
+      source: "",
+    })
+    setShowAddForm(false)
+  }
+
+  const resetForm = () => {
+    setNewStory({
+      rescueDate: "",
+      location: "",
+      exploitationType: "sex",
+      duration: "",
+      currentStatus: "",
+      aspirations: "",
+      livingConditions: "",
+      age: 0,
+      gender: "",
+      source: "",
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -176,6 +239,155 @@ export default function SurvivorStories() {
           </Card>
         ))}
       </div>
+
+      {/* Add New Story Form Modal */}
+      {showAddForm && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowAddForm(false)}
+        >
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Add New Survivor Story</CardTitle>
+                <Button variant="ghost" onClick={() => setShowAddForm(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Rescue Date</label>
+                    <Input
+                      type="date"
+                      value={newStory.rescueDate}
+                      onChange={(e) => handleInputChange('rescueDate', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Location</label>
+                    <Input
+                      placeholder="e.g., Mumbai, India"
+                      value={newStory.location}
+                      onChange={(e) => handleInputChange('location', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Exploitation Type</label>
+                    <select 
+                      value={newStory.exploitationType}
+                      onChange={(e) => handleInputChange('exploitationType', e.target.value as "sex" | "labor")}
+                      className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                      required
+                    >
+                      <option value="sex">Sex Trafficking</option>
+                      <option value="labor">Labor Trafficking</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Duration of Exploitation</label>
+                    <Input
+                      placeholder="e.g., 18 months"
+                      value={newStory.duration}
+                      onChange={(e) => handleInputChange('duration', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Age</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="120"
+                      value={newStory.age}
+                      onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 0)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Gender</label>
+                    <select 
+                      value={newStory.gender}
+                      onChange={(e) => handleInputChange('gender', e.target.value)}
+                      className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                      required
+                    >
+                      <option value="">Select gender</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Non-binary">Non-binary</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Current Status</label>
+                  <Input
+                    placeholder="e.g., Enrolled in vocational training"
+                    value={newStory.currentStatus}
+                    onChange={(e) => handleInputChange('currentStatus', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Future Aspirations</label>
+                  <textarea
+                    placeholder="e.g., Wants to become a social worker to help other survivors"
+                    value={newStory.aspirations}
+                    onChange={(e) => handleInputChange('aspirations', e.target.value)}
+                    className="w-full h-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 resize-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Current Living Conditions</label>
+                  <textarea
+                    placeholder="e.g., Living in secure shelter, receiving counseling"
+                    value={newStory.livingConditions}
+                    onChange={(e) => handleInputChange('livingConditions', e.target.value)}
+                    className="w-full h-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 resize-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Source</label>
+                  <Input
+                    placeholder="e.g., Polaris Project Case Study #247"
+                    value={newStory.source}
+                    onChange={(e) => handleInputChange('source', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button type="submit" className="flex-1">
+                    Add Story
+                  </Button>
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Reset Form
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {selectedStory && (
         <div
@@ -268,7 +480,7 @@ export default function SurvivorStories() {
             <CardDescription>Document a new survivor story for the database</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button>Add New Survivor Story</Button>
+            <Button onClick={() => setShowAddForm(true)}>Add New Survivor Story</Button>
           </CardContent>
         </Card>
       )}
