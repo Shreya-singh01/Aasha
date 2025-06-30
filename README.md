@@ -3,19 +3,34 @@
 
 ---
 
-## 🚀 Live Demo & Screenshots
-(You can embed your live link or screenshots here)
+## 👩‍💻 Collaborators
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/saieshamittal">
+        <img src="https://avatars.githubusercontent.com/u/83499482?v=4" width="80px;" alt="Sai Esha Mittal"/><br />
+        <sub><b>Sai Esha Mittal</b></sub>
+      </a>
+    </td>
+    <!-- Add more collaborators here if needed -->
+  </tr>
+</table>
+
+---
+
+<!-- 🚀 Live Demo & Screenshots -->
+<!-- Add your live demo link or screenshot embeds below -->
+<!-- Example: ![Screenshot](link_to_image.png) -->
 
 ---
 
 ## 🛠 Built With
-Badges showcase tools and technologies used:
 
 ![Last Commit](https://img.shields.io/github/last-commit/saieshamittal/Aasha)  
 ![TypeScript](https://img.shields.io/github/languages/top/saieshamittal/Aasha?color=blue)  
 ![Repo Languages](https://img.shields.io/github/languages/count/saieshamittal/Aasha)
 
-A smarter display of tech stack:
+**Tech Stack:**
 
 ![Express](https://img.shields.io/badge/-Express-black?logo=express)  
 ![MongoDB](https://img.shields.io/badge/-Mongoose-red?logo=mongoose)  
@@ -23,6 +38,9 @@ A smarter display of tech stack:
 ![React](https://img.shields.io/badge/-React-61DAFB?logo=react)  
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript)  
 ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite)  
+![Zod](https://img.shields.io/badge/-Zod-purple)  
+![Nodemon](https://img.shields.io/badge/-Nodemon-green?logo=nodemon)  
+![React Hook Form](https://img.shields.io/badge/-React_Hook_Form-EC5990)  
 ...and more!
 
 ---
@@ -40,22 +58,16 @@ A smarter display of tech stack:
 ---
 
 ## 🧭 Overview
-Aasha is a comprehensive anti-trafficking platform that empowers users to:
-- Submit secure reports  
-- Track real-time case progress  
-- View role-based dashboards  
-- Visualize high-risk zones  
-- Access victim testimonials  
-- Connect with a network of therapists
+Aasha is a full-stack anti-human trafficking platform designed to empower change and support survivors through tech-enabled interventions. It offers secure, real-time case management, reporting tools, and a network of support.
 
 ---
 
 ## ✨ Features
-- Role-based access & dashboards  
-- Secure end-to-end reporting  
-- “Red zone” heat-map visualization  
-- Survivor story archives  
-- Integrated therapy network
+- 🔐 Role-based access (Admin, Caseworker, Therapist)
+- 📍 Red zone mapping using Leaflet  
+- 📖 Survivor story archives  
+- 🧑‍⚕️ Integrated therapy & case management  
+- ✅ Secure report submission and dashboard tracking
 
 ---
 
@@ -67,7 +79,7 @@ Aasha is a comprehensive anti-trafficking platform that empowers users to:
 - Yarn or npm
 
 ### Installation
-```sh
+```bash
 git clone https://github.com/saieshamittal/Aasha.git
 cd Aasha
 yarn install
