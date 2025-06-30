@@ -6,9 +6,9 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Guardian Angel Alliance - Anti-Trafficking Platform",
+  title: "Aasha: Hope for the forgotten",
   description:
-    "Comprehensive platform for combating human trafficking through survivor-centered support and coordinated response",
+    "Aasha: Hope for the forgotten - Comprehensive platform for combating human trafficking through survivor-centered support and coordinated response",
 }
 
 export default function RootLayout({ children }) {

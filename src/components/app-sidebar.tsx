@@ -149,8 +149,8 @@ export function AppSidebar() {
   return (
     <div className="w-64 bg-white border-r h-screen flex flex-col">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold">ATP System</h2>
-        <p className="text-sm text-gray-600">{user?.organization || "Anti-Trafficking Platform"}</p>
+        <h2 className="text-lg font-semibold">Aasha</h2>
+        <p className="text-sm text-gray-600">{"Anti-Trafficking Platform"}</p>
       </div>
       
       <div className="flex-1 p-4">

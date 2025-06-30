@@ -83,8 +83,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="px-2 py-2">
-          <h2 className="text-lg font-semibold">Guardian Angel</h2>
-          <p className="text-sm text-muted-foreground">{user?.organization || "Anti-Trafficking Platform"}</p>
+          <div className="font-bold text-xl">Aasha: Hope for the forgotten</div>
+          <div className="text-sm text-gray-500">{user?.organization || "Anti-Trafficking Platform"}</div>
         </div>
       </SidebarHeader>
       <SidebarContent>

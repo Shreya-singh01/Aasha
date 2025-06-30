@@ -121,7 +121,7 @@ export default function AIChat() {
               <div className="flex items-center space-x-2">
                 <Bot className="h-6 w-6 text-blue-600" />
                 <div>
-                  <CardTitle>Guardian Angel AI Assistant</CardTitle>
+                  <CardTitle>AashaAI Assistant</CardTitle>
                   <CardDescription>Secure, confidential support available 24/7</CardDescription>
                 </div>
                 <Badge variant="secondary" className="ml-auto">
