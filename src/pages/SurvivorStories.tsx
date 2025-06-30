@@ -5,6 +5,7 @@ import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Calendar, MapPin, User, GraduationCap, Briefcase, Home, X } from 'lucide-react'
+import './SurvivorStories.css'; // Import custom CSS for fade-in effect
 
 const API_BASE_URL = 'http://localhost:5005/api';
 

@@ -1,0 +1,8 @@
+@keyframes fadeInSurvivorBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.survivor-bg-fade {
+  animation: fadeInSurvivorBg 1.5s ease-in;
+} 

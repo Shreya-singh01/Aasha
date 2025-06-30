@@ -5,6 +5,7 @@ require('dotenv').config({ path: path.join(__dirname, 'config.env') });
 const Victim = require('./models/Victim');
 const NGO = require('./models/NGO');
 const Report = require('./models/Report');
+const SurvivorStory = require('./models/SurvivorStory');
 
 const connectDB = require('./config/database');
 
@@ -623,6 +624,73 @@ const sampleData = {
       urgency: "critical",
       contactInfo: { anonymous: true }
     }
+  ],
+  survivorStories: [
+    {
+      rescueDate: new Date('2023-12-15'),
+      location: 'Mumbai, Maharashtra, India',
+      exploitationType: 'sex',
+      duration: '2 years',
+      currentStatus: 'Recovering in government safe house, receiving counseling and vocational training.',
+      aspirations: 'Wants to become a social worker to help other survivors, dreams of opening a small business.',
+      livingConditions: 'Currently in a safe house with other survivors, has access to basic amenities and support.',
+      age: 24,
+      gender: 'Female',
+      source: 'NGO Rescue Foundation',
+      isActive: true
+    },
+    {
+      rescueDate: new Date('2024-01-10'),
+      location: 'Delhi, India',
+      exploitationType: 'labor',
+      duration: '1 year',
+      currentStatus: 'Working part-time and attending school, supported by local NGO.',
+      aspirations: 'Aims to become a teacher and advocate for child labor prevention.',
+      livingConditions: 'Living with extended family, supported by community programs.',
+      age: 17,
+      gender: 'Male',
+      source: 'Community Report',
+      isActive: true
+    },
+    {
+      rescueDate: new Date('2022-08-05'),
+      location: 'Kolkata, West Bengal, India',
+      exploitationType: 'sex',
+      duration: '6 months',
+      currentStatus: 'Enrolled in a rehabilitation program, learning new skills.',
+      aspirations: 'Wants to become a counselor for at-risk youth.',
+      livingConditions: 'Staying at a rehabilitation center, receiving therapy and education.',
+      age: 19,
+      gender: 'Female',
+      source: 'Police Rescue',
+      isActive: true
+    },
+    {
+      rescueDate: new Date('2023-03-22'),
+      location: 'Chennai, Tamil Nadu, India',
+      exploitationType: 'labor',
+      duration: '3 years',
+      currentStatus: 'Reunited with family, attending vocational training.',
+      aspirations: 'Hopes to start a tailoring business and support siblings.',
+      livingConditions: 'Living with family, supported by local NGO.',
+      age: 21,
+      gender: 'Male',
+      source: "NGO Women's Safety Alliance",
+      isActive: true
+    },
+    {
+      rescueDate: new Date('2023-09-18'),
+      location: 'Lucknow, Uttar Pradesh, India',
+      exploitationType: 'labor',
+      duration: '8 months',
+      currentStatus: 'Attending skill development workshops and working part-time at a local store.',
+      aspirations: 'Wants to become a chef and open a small restaurant to support her family.',
+      livingConditions: 'Living in a community shelter with access to food and education.',
+      age: 20,
+      gender: 'Female',
+      source: 'Local NGO Outreach',
+      isActive: true
+    }
   ]
 };
 
@@ -634,6 +702,7 @@ const seedDatabase = async () => {
     await Victim.deleteMany({});
     await NGO.deleteMany({});
     await Report.deleteMany({});
+    await SurvivorStory.deleteMany({});
     
     // Insert NGOs
     const ngos = await NGO.insertMany(sampleData.ngos);
@@ -642,6 +711,10 @@ const seedDatabase = async () => {
     // Insert Reports
     const reports = await Report.insertMany(sampleData.reports);
     console.log(`Created ${reports.length} Reports`);
+    
+    // Insert Survivor Stories
+    const survivorStories = await SurvivorStory.insertMany(sampleData.survivorStories);
+    console.log(`Created ${survivorStories.length} Survivor Stories`);
     
     // Insert Victims with NGO assignments
     const victimsWithNGOs = sampleData.victims.map((victim, index) => {
@@ -696,6 +769,7 @@ const seedDatabase = async () => {
     console.log('\n=== DATABASE SEEDED SUCCESSFULLY ===');
     console.log(`✅ ${ngos.length} NGOs created`);
     console.log(`✅ ${reports.length} Reports created`);
+    console.log(`✅ ${survivorStories.length} Survivor Stories created`);
     console.log(`✅ ${victims.length} Victims created`);
     console.log('\nVictim Cases Created:');
     victims.forEach((victim, index) => {

@@ -139,5 +139,17 @@ router.post('/submit', upload.array('evidence'), async (req, res) => {
   }
 });
 
+// @route   GET /api/reports
+// @desc    Get all reports
+router.get('/', async (req, res) => {
+  try {
+    const reports = await Report.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: reports });
+  } catch (err) {
+    console.error('❌ Error fetching reports:', err);
+    res.status(500).json({ error: 'Something went wrong while fetching reports!' });
+  }
+});
+
 module.exports = router;
 
