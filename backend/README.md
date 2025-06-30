@@ -59,7 +59,7 @@ Create a `config.env` file in the backend directory:
 
 ```env
 # Server Configuration
-PORT=5000
+PORT=5005
 NODE_ENV=development
 
 # MongoDB Atlas Connection String
