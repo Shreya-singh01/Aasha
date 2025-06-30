@@ -120,7 +120,7 @@ export default function SubmitReport() {
   })
 
   try {
-    const response = await fetch("http://localhost:5002/api/reports/submit", {
+    const response = await fetch("http://localhost:5005/api/reports/submit", {
       method: "POST",
       body: form
     })
