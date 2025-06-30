@@ -14,6 +14,7 @@ import Database from './pages/Database'
 import Reports from './pages/Reports'
 import Missions from './pages/Missions'
 import { AppSidebar } from './components/app-sidebar'
+import { Link } from "react-router-dom";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()

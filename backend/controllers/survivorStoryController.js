@@ -41,7 +41,6 @@ const getAllSurvivorStories = async (req, res) => {
       .sort(sortOptions)
       .limit(limit * 1)
       .skip((page - 1) * limit)
-      .populate('createdBy', 'name email')
       .lean();
 
     // Get total count for pagination
@@ -93,7 +92,7 @@ const getSurvivorStory = async (req, res) => {
     const story = await SurvivorStory.findOne({ 
       _id: req.params.id, 
       isActive: true 
-    }).populate('createdBy', 'name email');
+    }).lean();
 
     if (!story) {
       return res.status(404).json({
@@ -156,11 +155,10 @@ const createSurvivorStory = async (req, res) => {
       age: parseInt(age),
       gender,
       source,
-      createdBy: req.user.id // Assuming you have user authentication middleware
+      createdBy: req.user?.id || '000000000000000000000000' // Dummy ObjectId for testing
     });
 
     const savedStory = await newStory.save();
-    await savedStory.populate('createdBy', 'name email');
 
     res.status(201).json({
       success: true,
@@ -233,7 +231,7 @@ const updateSurvivorStory = async (req, res) => {
       req.params.id,
       updateFields,
       { new: true, runValidators: true }
-    ).populate('createdBy', 'name email');
+    ).lean();
 
     res.status(200).json({
       success: true,
@@ -360,7 +358,6 @@ const searchSurvivorStories = async (req, res) => {
     
     const stories = await SurvivorStory.find(query)
       .sort({ rescueDate: -1 })
-      .populate('createdBy', 'name email')
       .lean();
     
     const formattedStories = stories.map(story => ({
