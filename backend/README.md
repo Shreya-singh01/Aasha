@@ -211,7 +211,7 @@ GET /health
   age: Number,                // Required, 0-120
   gender: String,             // Required, enum: ['Female', 'Male', 'Non-binary', 'Other']
   source: String,             // Required, max 300 chars
-  createdBy: ObjectId,        // Required, reference to User
+  createdBy: ObjectId,        // Optional for testing
   isActive: Boolean,          // Default: true
   createdAt: Date,            // Auto-generated
   updatedAt: Date             // Auto-generated

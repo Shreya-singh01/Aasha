@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const mongoose = require('mongoose'); //by Vidhi
 
 // Load environment variables from config.env
 require('dotenv').config({ path: path.join(__dirname, 'config.env') });
@@ -77,6 +78,8 @@ app.get('/', (req, res) => {
     }
   });
 });
+const reportRoutes = require('./routes/reports');
+app.use('/api/reports', reportRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

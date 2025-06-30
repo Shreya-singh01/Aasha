@@ -83,16 +83,62 @@ export default function SubmitReport() {
     }))
   }
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setIsSubmitting(true)
+    
+  //   // Simulate API call
+  //   await new Promise(resolve => setTimeout(resolve, 2000))
+    
+  //   setIsSubmitting(false)
+  //   setSubmitted(true)
+  // } //////by Vidhiiiiiiiii
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
+  e.preventDefault()
+  setIsSubmitting(true)
+
+  const form = new FormData()
+
+  // Append regular fields
+  form.append("incidentType", formData.incidentType)
+  form.append("location", formData.location)
+  form.append("date", formData.date)
+  form.append("time", formData.time)
+  form.append("description", formData.description)
+  form.append("victimCount", formData.victimCount.toString())
+  form.append("perpetratorCount", formData.perpetratorCount.toString())
+  form.append("urgency", formData.urgency)
+  form.append("additionalNotes", formData.additionalNotes)
+
+  // Append contactInfo as JSON string
+  form.append("contactInfo", JSON.stringify(formData.contactInfo))
+
+  // Append files
+  formData.evidence.forEach((file) => {
+    form.append("evidence", file)
+  })
+
+  try {
+    const response = await fetch("http://localhost:5005/api/reports/submit", {
+      method: "POST",
+      body: form
+    })
+
+    if (!response.ok) throw new Error("Submission failed")
+
+    const data = await response.json()
+    console.log("✅ Report submitted:", data)
+
     setIsSubmitting(false)
     setSubmitted(true)
+  } catch (error) {
+    console.error("❌ Error submitting report:", error)
+    alert("Failed to submit report. Please try again.")
+    setIsSubmitting(false)
   }
+}
+
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -309,18 +355,22 @@ export default function SubmitReport() {
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600 mb-2">Drag and drop files here, or click to select</p>
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <Button variant="outline" type="button">
+                <Button 
+                    variant="outline" 
+                    type="button" 
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
                     Choose Files
                   </Button>
-                </label>
+
+                  <input
+                    id="file-upload"
+                    type="file"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+
               </div>
             </div>
 
