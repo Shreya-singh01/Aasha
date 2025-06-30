@@ -20,8 +20,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-<<<<<<< HEAD
-    "dotenv": "^16.6.1",
+    "dotenv": "^16.0.3",
     "express": "^4.21.2",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
@@ -30,16 +29,6 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.4"
-=======
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-validator": "^7.0.1",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.3",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1"
->>>>>>> eee65c46acf2dd25998d935618f52b2e15151841
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
