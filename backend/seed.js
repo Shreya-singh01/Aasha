@@ -12,81 +12,134 @@ const connectDB = require('./config/database');
 const sampleData = {
   ngos: [
     {
-      name: "Rescue Foundation",
-      type: "comprehensive",
-      focusAreas: ["sex_trafficking", "child_trafficking"],
-      contact: {
-        address: { city: "Mumbai", country: "India" },
-        phone: ["+91-22-12345678"],
-        email: ["info@rescuefoundation.org"]
-      },
-      operational: {
-        isActive: true,
-        capacity: { maxCases: 100, currentCases: 45 }
-      },
-      services: [
-        { type: "shelter", isAvailable: true },
-        { type: "medical", isAvailable: true },
-        { type: "psychological", isAvailable: true }
-      ]
-    },
-    {
-      name: "Freedom Network",
+      name: "Helping Hands",
       type: "rescue",
-      focusAreas: ["labor_trafficking"],
-      contact: {
-        address: { city: "Delhi", country: "India" },
-        phone: ["+91-11-87654321"],
-        email: ["contact@freedomnetwork.org"]
-      },
+      location: { city: "Delhi", locality: "Saket", pincode: "110017" },
+      contact: { phone: ["9876543210"], email: ["helpinghands@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
       operational: {
         isActive: true,
-        capacity: { maxCases: 75, currentCases: 30 }
-      },
-      services: [
-        { type: "emergency_response", isAvailable: true },
-        { type: "shelter", isAvailable: true }
-      ]
+        capacity: {
+          maxCases: 5,
+          currentCases: 0,
+          availableSlots: 5
+        }
+      }
     },
     {
-      name: "Child Protection Initiative",
-      type: "comprehensive",
-      focusAreas: ["child_trafficking", "forced_marriage"],
-      contact: {
-        address: { city: "Bangalore", country: "India" },
-        phone: ["+91-80-98765432"],
-        email: ["info@childprotection.org"]
-      },
+      name: "Care and Share",
+      type: "rehabilitation",
+      location: { city: "Mumbai", locality: "Andheri West", pincode: "400053" },
+      contact: { phone: ["9123456780"], email: ["care@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
       operational: {
         isActive: true,
-        capacity: { maxCases: 50, currentCases: 20 }
-      },
-      services: [
-        { type: "education", isAvailable: true },
-        { type: "counseling", isAvailable: true },
-        { type: "legal", isAvailable: true }
-      ]
+        capacity: {
+          maxCases: 4,
+          currentCases: 1,
+          availableSlots: 3
+        }
+      }
     },
     {
-      name: "Women's Safety Alliance",
+      name: "Udaan Foundation",
+      type: "legal",
+      location: { city: "Bangalore", locality: "Koramangala", pincode: "560034" },
+      contact: { phone: ["9988776655"], email: ["udaan@ngo.org"] },
+      assignedTasks: ["report_101"],
+      availability: false,
+      operational: {
+        isActive: true,
+        capacity: {
+          maxCases: 6,
+          currentCases: 0,
+          availableSlots: 6
+        }
+      }
+    },
+    {
+      name: "Seva Trust",
+      type: "medical",
+      location: { city: "Chennai", locality: "Adyar", pincode: "600020" },
+      contact: { phone: ["9871203344"], email: ["seva@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
+      operational: {
+        isActive: true,
+        capacity: {
+          maxCases: 3,
+          currentCases: 0,
+          availableSlots: 3
+        }
+      }
+    },
+    {
+      name: "Jeevan Jyoti",
+      type: "education",
+      location: { city: "Kolkata", locality: "Salt Lake", pincode: "700064" },
+      contact: { phone: ["9765432100"], email: ["jeevan@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
+      operational: {
+        isActive: true,
+        capacity: {
+          maxCases: 8,
+          currentCases: 2,
+          availableSlots: 6
+        }
+      }
+    },
+    {
+      name: "Nayi Disha",
       type: "advocacy",
-      focusAreas: ["sex_trafficking", "domestic_servitude"],
-      contact: {
-        address: { city: "Chennai", country: "India" },
-        phone: ["+91-44-12345678"],
-        email: ["contact@womensafety.org"]
-      },
+      location: { city: "Hyderabad", locality: "Banjara Hills", pincode: "500034" },
+      contact: { phone: ["9812345678"], email: ["nayi@ngo.org"] },
+      assignedTasks: ["report_103", "report_107"],
+      availability: false,
       operational: {
         isActive: true,
-        capacity: { maxCases: 60, currentCases: 25 }
-      },
-      services: [
-        { type: "legal", isAvailable: true },
-        { type: "vocational", isAvailable: true },
-        { type: "shelter", isAvailable: true }
-      ]
+        capacity: {
+          maxCases: 5,
+          currentCases: 3,
+          availableSlots: 0
+        }
+      }
+    },
+    {
+      name: "Asha Kiran",
+      type: "comprehensive",
+      location: { city: "Pune", locality: "Kothrud", pincode: "411038" },
+      contact: { phone: ["8800554433"], email: ["asha@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
+      operational: {
+        isActive: true,
+        capacity: {
+          maxCases: 7,
+          currentCases: 3,
+          availableSlots: 4
+        }
+      }
+    },
+    {
+      name: "Sahyog India",
+      type: "rescue",
+      location: { city: "Ahmedabad", locality: "Navrangpura", pincode: "380009" },
+      contact: { phone: ["7896541230"], email: ["sahyog@ngo.org"] },
+      assignedTasks: [],
+      availability: true,
+      operational: {
+        isActive: true,
+        capacity: {
+          maxCases: 6,
+          currentCases: 2,
+          availableSlots: 4
+        }
+      }
     }
-  ],
+  ],  
   victims: [
     {
       basicInfo: {

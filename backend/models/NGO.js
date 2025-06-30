@@ -23,6 +23,13 @@ const ngoSchema = new mongoose.Schema({
     enum: ['sex_trafficking', 'labor_trafficking', 'child_trafficking', 'domestic_servitude', 'forced_marriage', 'organ_trafficking', 'other']
   }],
 
+  // ✅ Location block to support seeding and querying
+  location: {
+    city: String,
+    locality: String,
+    pincode: String
+  },
+
   // Contact Information
   contact: {
     address: {
@@ -54,7 +61,7 @@ const ngoSchema = new mongoose.Schema({
       end: String,
       timezone: String
     },
-    coverageArea: [String], // Cities/states/countries they operate in
+    coverageArea: [String],
     capacity: {
       maxCases: Number,
       currentCases: {
@@ -68,7 +75,6 @@ const ngoSchema = new mongoose.Schema({
     }
   },
 
-  // Services Offered
   services: [{
     type: {
       type: String,
@@ -86,7 +92,6 @@ const ngoSchema = new mongoose.Schema({
     }
   }],
 
-  // Staff Information
   staff: {
     totalStaff: Number,
     caseWorkers: Number,
@@ -101,7 +106,6 @@ const ngoSchema = new mongoose.Schema({
     }]
   },
 
-  // Resources and Facilities
   facilities: {
     shelterBeds: Number,
     medicalFacility: {
@@ -120,22 +124,20 @@ const ngoSchema = new mongoose.Schema({
     securityMeasures: [String]
   },
 
-  // Performance Metrics
   performance: {
     totalCasesHandled: {
       type: Number,
       default: 0
     },
-    successRate: Number, // Percentage
-    averageResponseTime: Number, // in hours
-    averageRecoveryTime: Number, // in days
+    successRate: Number,
+    averageResponseTime: Number,
+    averageRecoveryTime: Number,
     lastUpdated: {
       type: Date,
       default: Date.now
     }
   },
 
-  // Partnerships and Networks
   partnerships: [{
     organization: String,
     type: String,
@@ -148,7 +150,6 @@ const ngoSchema = new mongoose.Schema({
     }
   }],
 
-  // Funding and Financial Information
   funding: {
     sources: [{
       source: String,
@@ -167,7 +168,6 @@ const ngoSchema = new mongoose.Schema({
     }
   },
 
-  // Certifications and Accreditations
   certifications: [{
     name: String,
     issuingAuthority: String,
@@ -179,16 +179,16 @@ const ngoSchema = new mongoose.Schema({
     }
   }],
 
-  // Documentation
   documents: {
-    registrationCertificate: String, // File URL
-    taxExemption: String, // File URL
-    annualReports: [String], // File URLs
-    policies: [String], // File URLs
-    photos: [String] // File URLs
+    registrationCertificate: String,
+    taxExemption: String,
+    annualReports: [String],
+    policies: [String],
+    photos: [String]
   },
 
-  // System fields
+  assignedTasks: [String],
+
   createdAt: {
     type: Date,
     default: Date.now
@@ -199,71 +199,46 @@ const ngoSchema = new mongoose.Schema({
   },
   createdBy: String,
   updatedBy: String
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
-// Indexes for better query performance
-ngoSchema.index({ name: 1 });
-ngoSchema.index({ type: 1 });
-ngoSchema.index({ 'operational.isActive': 1 });
-ngoSchema.index({ 'operational.coverageArea': 1 });
-ngoSchema.index({ 'focusAreas': 1 });
-ngoSchema.index({ 'services.type': 1 });
-
-// Pre-save middleware to update the updatedAt field
-ngoSchema.pre('save', function(next) {
+ngoSchema.pre('save', function (next) {
   this.updatedAt = new Date();
   next();
 });
 
-// Method to check if NGO can accept new cases
-ngoSchema.methods.canAcceptCase = function() {
-  return this.operational.isActive && 
-         this.operational.capacity.currentCases < this.operational.capacity.maxCases;
+ngoSchema.methods.canAcceptCase = function () {
+  return this.operational?.isActive &&
+    this.operational.capacity.currentCases < this.operational.capacity.maxCases;
 };
 
-// Method to add a case
-ngoSchema.methods.addCase = function() {
+ngoSchema.methods.addCase = function () {
   if (this.canAcceptCase()) {
     this.operational.capacity.currentCases += 1;
-    this.operational.capacity.availableSlots = 
+    this.operational.capacity.availableSlots =
       this.operational.capacity.maxCases - this.operational.capacity.currentCases;
     return this.save();
   }
   throw new Error('NGO cannot accept more cases');
 };
 
-// Method to remove a case
-ngoSchema.methods.removeCase = function() {
+ngoSchema.methods.removeCase = function () {
   if (this.operational.capacity.currentCases > 0) {
     this.operational.capacity.currentCases -= 1;
-    this.operational.capacity.availableSlots = 
+    this.operational.capacity.availableSlots =
       this.operational.capacity.maxCases - this.operational.capacity.currentCases;
     return this.save();
   }
   throw new Error('No cases to remove');
 };
 
-// Static method to find NGOs by service type
-ngoSchema.statics.findByService = function(serviceType) {
+ngoSchema.statics.findByLocation = function (location) {
   return this.find({
     'operational.isActive': true,
-    'services.type': serviceType,
-    'services.isAvailable': true
+    'location.city': { $regex: location, $options: 'i' }
   });
 };
 
-// Static method to find NGOs by location
-ngoSchema.statics.findByLocation = function(location) {
-  return this.find({
-    'operational.isActive': true,
-    'operational.coverageArea': { $regex: location, $options: 'i' }
-  });
-};
-
-// Static method to find NGOs with available capacity
-ngoSchema.statics.findWithCapacity = function() {
+ngoSchema.statics.findWithCapacity = function () {
   return this.find({
     'operational.isActive': true,
     $expr: {
@@ -272,4 +247,4 @@ ngoSchema.statics.findWithCapacity = function() {
   });
 };
 
-module.exports = mongoose.model('NGO', ngoSchema); 
+module.exports = mongoose.model('NGO', ngoSchema);

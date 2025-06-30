@@ -20,6 +20,12 @@ const reportSchema = new mongoose.Schema({
   },
   evidence: [String], // file URLs or names
   additionalNotes: String,
+  assignedTo: String, // Name or ID of assigned NGO/team
+  status: {
+    type: String,
+    enum: ['pending', 'assigned', 'under_investigation', 'resolved', 'false_alarm'],
+    default: 'pending'
+  },
   createdAt: {
     type: Date,
     default: Date.now
