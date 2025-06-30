@@ -2,67 +2,16 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
-import { MapPin, AlertTriangle, Shield, Users, Clock, TrendingUp } from 'lucide-react'
-
-interface RedZone {
-  id: string
-  name: string
-  location: string
-  riskLevel: "high" | "medium" | "low"
-  lastReport: string
-  activeCases: number
-  description: string
-  coordinates: { lat: number; lng: number }
-}
-
-const mockRedZones: RedZone[] = [
-  {
-    id: "1",
-    name: "Downtown Entertainment District",
-    location: "Central Business District",
-    riskLevel: "high",
-    lastReport: "2 hours ago",
-    activeCases: 12,
-    description: "High concentration of bars, clubs, and hotels. Multiple reports of suspicious activity.",
-    coordinates: { lat: 40.7128, lng: -74.0060 }
-  },
-  {
-    id: "2",
-    name: "Industrial Warehouse Complex",
-    location: "Port Area",
-    riskLevel: "high",
-    lastReport: "1 day ago",
-    activeCases: 8,
-    description: "Abandoned warehouses used for illegal activities. Limited surveillance.",
-    coordinates: { lat: 40.7589, lng: -73.9851 }
-  },
-  {
-    id: "3",
-    name: "Suburban Shopping Mall",
-    location: "Outer Boroughs",
-    riskLevel: "medium",
-    lastReport: "3 days ago",
-    activeCases: 5,
-    description: "Large parking lots and multiple exits. Some reports of recruitment activity.",
-    coordinates: { lat: 40.7505, lng: -73.9934 }
-  },
-  {
-    id: "4",
-    name: "Transportation Hub",
-    location: "Major Transit Center",
-    riskLevel: "medium",
-    lastReport: "1 week ago",
-    activeCases: 3,
-    description: "Bus and train stations with high foot traffic. Vulnerable populations present.",
-    coordinates: { lat: 40.7527, lng: -73.9772 }
-  }
-]
+import { MapPin, AlertTriangle, Shield, Users, Clock, TrendingUp, RefreshCw } from 'lucide-react'
+import MapView from '../components/MapView'
+import { useRedZones, RedZone } from '../hooks/useRedZones'
 
 export default function RedZoneMapping() {
+  const { zones, stats, loading, error, refreshData } = useRedZones()
   const [selectedZone, setSelectedZone] = useState<RedZone | null>(null)
   const [filterRisk, setFilterRisk] = useState<string>("all")
 
-  const filteredZones = mockRedZones.filter(zone => 
+  const filteredZones = zones.filter(zone => 
     filterRisk === "all" || zone.riskLevel === filterRisk
   )
 
@@ -84,15 +33,59 @@ export default function RedZoneMapping() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Red Zone Mapping</h1>
+          <p className="text-gray-600">GIS-based risk visualization and real-time mission tracking</p>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <RefreshCw className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
+            <p className="text-gray-600">Loading red zone data...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Red Zone Mapping</h1>
+          <p className="text-gray-600">GIS-based risk visualization and real-time mission tracking</p>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-4" />
+            <p className="text-red-600 mb-4">Error loading data: {error}</p>
+            <Button onClick={refreshData} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Red Zone Mapping</h1>
-        <p className="text-gray-600">GIS-based risk visualization and real-time mission tracking</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Red Zone Mapping</h1>
+          <p className="text-gray-600">GIS-based risk visualization and real-time mission tracking</p>
+        </div>
+        <Button onClick={refreshData} variant="outline" size="sm">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
-      {/* Map Placeholder */}
-      <Card className="h-96">
+      {/* Map */}
+      <Card className="h-[500px]">
         <CardHeader>
           <CardTitle className="flex items-center">
             <MapPin className="h-5 w-5 mr-2" />
@@ -100,12 +93,10 @@ export default function RedZoneMapping() {
           </CardTitle>
           <CardDescription>Real-time visualization of high-risk areas and active missions</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-          <div className="text-center">
-            <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">Interactive map coming soon...</p>
-            <p className="text-sm text-gray-500">GIS integration with real-time data</p>
-          </div>
+        <CardContent className="p-0 overflow-hidden rounded-lg">
+          <div className="w-full h-96">
+            <MapView zones={filteredZones} />
+           </div>
         </CardContent>
       </Card>
 
@@ -128,7 +119,7 @@ export default function RedZoneMapping() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredZones.map((zone) => (
           <Card 
-            key={zone.id} 
+            key={zone._id} 
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => setSelectedZone(zone)}
           >
@@ -173,10 +164,14 @@ export default function RedZoneMapping() {
       {/* Zone Detail Modal */}
       {selectedZone && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.5)", zIndex: 99999 }}
           onClick={() => setSelectedZone(null)}
         >
-          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Zone Details - {selectedZone.name}</CardTitle>
@@ -238,56 +233,58 @@ export default function RedZoneMapping() {
                 <Button className="w-full">Update Zone Status</Button>
               </div>
             </CardContent>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* Statistics */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Red Zones</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-gray-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockRedZones.length}</div>
-            <p className="text-xs text-gray-600">Active monitoring</p>
-          </CardContent>
-        </Card>
+      {stats && (
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Red Zones</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-gray-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalZones}</div>
+              <p className="text-xs text-gray-600">Active monitoring</p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">High Risk Areas</CardTitle>
-            <TrendingUp className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockRedZones.filter(z => z.riskLevel === "high").length}</div>
-            <p className="text-xs text-gray-600">Require immediate attention</p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">High Risk Areas</CardTitle>
+              <TrendingUp className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.highRiskZones}</div>
+              <p className="text-xs text-gray-600">Require immediate attention</p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Cases</CardTitle>
-            <Users className="h-4 w-4 text-gray-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockRedZones.reduce((sum, zone) => sum + zone.activeCases, 0)}</div>
-            <p className="text-xs text-gray-600">Across all zones</p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Cases</CardTitle>
+              <Users className="h-4 w-4 text-gray-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalActiveCases}</div>
+              <p className="text-xs text-gray-600">Across all zones</p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Reports</CardTitle>
-            <Clock className="h-4 w-4 text-gray-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-gray-600">Last 24 hours</p>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Recent Reports</CardTitle>
+              <Clock className="h-4 w-4 text-gray-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.recentReports}</div>
+              <p className="text-xs text-gray-600">Last 24 hours</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 } 

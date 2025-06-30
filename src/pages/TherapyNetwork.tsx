@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
@@ -15,111 +15,64 @@ import {
   Calendar,
   MessageSquare
 } from 'lucide-react'
+import { useTherapists, Therapist } from '../hooks/useTherapists'
 
-interface Therapist {
-  id: string
-  name: string
-  specialization: string
-  location: string
-  rating: number
-  experience: string
-  languages: string[]
-  availability: string
-  contact: {
-    phone: string
-    email: string
-  }
-  description: string
-  specialties: string[]
-  image: string
-}
-
-const mockTherapists: Therapist[] = [
-  {
-    id: "1",
-    name: "Dr. Sarah Johnson",
-    specialization: "Trauma Therapy",
-    location: "Downtown Counseling Center",
-    rating: 4.9,
-    experience: "15+ years",
-    languages: ["English", "Spanish"],
-    availability: "Mon-Fri 9AM-6PM",
-    contact: {
-      phone: "(555) 123-4567",
-      email: "sarah.johnson@therapy.com"
-    },
-    description: "Specialized in trauma-informed care for survivors of human trafficking with extensive experience in PTSD treatment.",
-    specialties: ["PTSD", "Trauma Recovery", "Anxiety", "Depression"],
-    image: "/placeholder-user.jpg"
-  },
-  {
-    id: "2",
-    name: "Dr. Michael Chen",
-    specialization: "Family Therapy",
-    location: "Community Mental Health",
-    rating: 4.8,
-    experience: "12+ years",
-    languages: ["English", "Mandarin"],
-    availability: "Mon-Sat 10AM-7PM",
-    contact: {
-      phone: "(555) 234-5678",
-      email: "michael.chen@therapy.com"
-    },
-    description: "Expert in family dynamics and reintegration therapy for survivors returning to their families.",
-    specialties: ["Family Therapy", "Reintegration", "Communication", "Trust Building"],
-    image: "/placeholder-user.jpg"
-  },
-  {
-    id: "3",
-    name: "Dr. Maria Rodriguez",
-    specialization: "Art Therapy",
-    location: "Creative Healing Center",
-    rating: 4.7,
-    experience: "8+ years",
-    languages: ["English", "Spanish", "Portuguese"],
-    availability: "Tue-Sat 11AM-8PM",
-    contact: {
-      phone: "(555) 345-6789",
-      email: "maria.rodriguez@therapy.com"
-    },
-    description: "Creative arts therapist specializing in non-verbal expression and healing through artistic mediums.",
-    specialties: ["Art Therapy", "Creative Expression", "Emotional Processing", "Self-Discovery"],
-    image: "/placeholder-user.jpg"
-  },
-  {
-    id: "4",
-    name: "Dr. James Wilson",
-    specialization: "Group Therapy",
-    location: "Recovery Support Center",
-    rating: 4.6,
-    experience: "10+ years",
-    languages: ["English"],
-    availability: "Mon-Fri 8AM-5PM",
-    contact: {
-      phone: "(555) 456-7890",
-      email: "james.wilson@therapy.com"
-    },
-    description: "Group therapy specialist focusing on peer support and community healing for survivors.",
-    specialties: ["Group Therapy", "Peer Support", "Community Building", "Social Skills"],
-    image: "/placeholder-user.jpg"
-  }
-]
+const API_BASE_URL = 'http://localhost:5005/api';
 
 export default function TherapyNetwork() {
   const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterSpecialty, setFilterSpecialty] = useState<string>("all")
+  const [scheduling, setScheduling] = useState<string | null>(null)
+  const [meetLinks, setMeetLinks] = useState<{ [id: string]: string }>({})
+  const [scheduleError, setScheduleError] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
 
-  const filteredTherapists = mockTherapists.filter(therapist => {
+  const { therapists, loading, error, refresh } = useTherapists(filterSpecialty)
+
+  // Get all specialties from loaded therapists
+  const allSpecialties = Array.from(new Set(therapists.map(t => t.specialization))).filter(Boolean).sort()
+
+  // Filter by search term (client-side)
+  const filteredTherapists = therapists.filter(therapist => {
     const matchesSearch = 
       therapist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       therapist.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      therapist.location.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filterSpecialty === "all" || therapist.specialties.includes(filterSpecialty)
-    return matchesSearch && matchesFilter
+      (therapist.institution?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
+    return matchesSearch
   })
 
-  const allSpecialties = Array.from(new Set(mockTherapists.flatMap(t => t.specialties)))
+  // Compute therapistsToShow
+  const isAllSpecializations = filterSpecialty === 'all'
+  const therapistsToShow = isAllSpecializations && !showAll
+    ? filteredTherapists.slice(0, 5)
+    : filteredTherapists
+
+  // Reset showAll when specialization changes
+  useEffect(() => {
+    setShowAll(false)
+  }, [filterSpecialty])
+
+  // Handler to schedule a meet
+  const handleScheduleMeet = async (therapist: Therapist) => {
+    setScheduling(therapist._id)
+    setScheduleError(null)
+    try {
+      const response = await fetch(`${API_BASE_URL}/therapists/${therapist._id}/schedule`, { method: 'POST' })
+      const data = await response.json()
+      if (data.success) {
+        setMeetLinks(prev => ({ ...prev, [therapist._id]: data.meetLink }))
+      } else {
+        setScheduleError(data.message || 'Failed to schedule meet')
+      }
+    } catch (err) {
+      setScheduleError('Error scheduling meet')
+    } finally {
+      setScheduling(null)
+    }
+  }
+
+  console.log(therapists);
 
   return (
     <div className="space-y-6">
@@ -131,7 +84,7 @@ export default function TherapyNetwork() {
       {/* Search and Filters */}
       <div className="flex gap-4 items-center flex-wrap">
         <Input
-          placeholder="Search therapists, specializations, or locations..."
+          placeholder="Search therapists, specializations, or institutions..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
@@ -147,13 +100,17 @@ export default function TherapyNetwork() {
           ))}
         </select>
         <Badge variant="outline">{filteredTherapists.length} therapists found</Badge>
+        <Button onClick={refresh} variant="outline" size="sm">Refresh</Button>
       </div>
+
+      {loading && <div className="text-center text-gray-500">Loading therapists...</div>}
+      {error && <div className="text-center text-red-500">{error}</div>}
 
       {/* Therapists Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTherapists.map((therapist) => (
+        {therapistsToShow.map((therapist) => (
           <Card 
-            key={therapist.id} 
+            key={therapist._id} 
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => setSelectedTherapist(therapist)}
           >
@@ -166,7 +123,7 @@ export default function TherapyNetwork() {
                   <CardTitle className="text-lg">{therapist.name}</CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    {therapist.location}
+                    {therapist.institution}
                   </CardDescription>
                 </div>
               </div>
@@ -176,46 +133,54 @@ export default function TherapyNetwork() {
                 <Badge variant="secondary" className="mb-2">
                   {therapist.specialization}
                 </Badge>
-                <p className="text-sm text-gray-600">{therapist.description}</p>
+                <p className="text-sm text-gray-600">{therapist.notes}</p>
               </div>
 
               <div className="flex items-center gap-2 text-sm">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-4 w-4 ${i < Math.floor(therapist.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-                    />
-                  ))}
-                </div>
-                <span className="font-medium">{therapist.rating}</span>
-                <span className="text-gray-600">({therapist.experience})</span>
+                <span className="font-medium">{therapist.availability}</span>
+                <span className="text-gray-600">{therapist.preferred_mode}</span>
               </div>
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-600" />
-                  <span>{therapist.availability}</span>
+                  <Mail className="h-4 w-4 text-gray-600" />
+                  <span>{therapist.email}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-gray-600" />
-                  <span>{therapist.languages.join(", ")}</span>
+                  <span>{therapist.languages.join(', ')}</span>
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book Session
+              <div className="pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={scheduling === therapist._id}
+                  onClick={() => handleScheduleMeet(therapist)}
+                  className="w-full"
+                >
+                  {scheduling === therapist._id ? 'Scheduling...' : 'Schedule Meet'}
                 </Button>
-                <Button variant="outline" size="sm">
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
+                {meetLinks[therapist._id] && (
+                  <div className="mt-2 text-green-600 text-xs break-all">
+                    Meet Link: <a href={meetLinks[therapist._id]} target="_blank" rel="noopener noreferrer" className="underline">{meetLinks[therapist._id]}</a>
+                  </div>
+                )}
+                {scheduleError && (
+                  <div className="mt-2 text-red-600 text-xs">{scheduleError}</div>
+                )}
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* View More Button */}
+      {isAllSpecializations && !showAll && filteredTherapists.length > 5 && (
+        <button onClick={() => setShowAll(true)} className="mt-4 text-blue-600 underline">
+          View More
+        </button>
+      )}
 
       {/* Therapist Detail Modal */}
       {selectedTherapist && (
@@ -241,16 +206,7 @@ export default function TherapyNetwork() {
                   <h3 className="text-xl font-semibold">{selectedTherapist.name}</h3>
                   <p className="text-gray-600">{selectedTherapist.specialization}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(selectedTherapist.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                    <span className="font-medium">{selectedTherapist.rating}</span>
-                    <span className="text-gray-600">({selectedTherapist.experience})</span>
+                    <span className="text-gray-600">Available: {selectedTherapist.availability}</span>
                   </div>
                 </div>
               </div>
@@ -261,9 +217,10 @@ export default function TherapyNetwork() {
                     <MapPin className="h-4 w-4" />
                     Location & Availability
                   </h3>
-                  <p><strong>Location:</strong> {selectedTherapist.location}</p>
+                  <p><strong>Institution:</strong> {selectedTherapist.institution}</p>
                   <p><strong>Availability:</strong> {selectedTherapist.availability}</p>
                   <p><strong>Languages:</strong> {selectedTherapist.languages.join(", ")}</p>
+                  <p><strong>Preferred Mode:</strong> {selectedTherapist.preferred_mode}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -271,25 +228,14 @@ export default function TherapyNetwork() {
                     <Phone className="h-4 w-4" />
                     Contact Information
                   </h3>
-                  <p><strong>Phone:</strong> {selectedTherapist.contact.phone}</p>
-                  <p><strong>Email:</strong> {selectedTherapist.contact.email}</p>
+                  <p><strong>Email:</strong> {selectedTherapist.email}</p>
+                  <p><strong>Notes:</strong> {selectedTherapist.notes}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <h3 className="font-semibold">About</h3>
-                <p>{selectedTherapist.description}</p>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="font-semibold">Specialties</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTherapist.specialties.map((specialty, index) => (
-                    <Badge key={index} variant="outline">
-                      {specialty}
-                    </Badge>
-                  ))}
-                </div>
+                <p>{selectedTherapist.notes}</p>
               </div>
 
               <div className="pt-4 border-t flex gap-2">
@@ -315,13 +261,17 @@ export default function TherapyNetwork() {
             <CardDescription>24/7 crisis counseling and immediate assistance</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start bg-transparent">
-              <Phone className="h-4 w-4 mr-2" />
-              Crisis Hotline: 1-800-CRISIS
+            <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+              <a href="tel:1800274747">
+                <Phone className="h-4 w-4 mr-2" />
+                Crisis Hotline: 1-800-CRISIS
+              </a>
             </Button>
-            <Button variant="outline" className="w-full justify-start bg-transparent">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Text Support: HOME to 741741
+            <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+              <a href="sms:741741?body=HOME">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Text Support: HOME to 741741
+              </a>
             </Button>
           </CardContent>
         </Card>
@@ -332,9 +282,11 @@ export default function TherapyNetwork() {
             <CardDescription>Connect with other survivors in a safe environment</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start bg-transparent">
-              <Users className="h-4 w-4 mr-2" />
-              Survivor Support Group
+            <Button variant="outline" className="w-full justify-start bg-transparent" asChild>
+              <a href="https://discord.gg/u97gVa6f" target="_blank" rel="noopener noreferrer">
+                <Users className="h-4 w-4 mr-2" />
+                Survivor Support Group
+              </a>
             </Button>
             <Button variant="outline" className="w-full justify-start bg-transparent">
               <Heart className="h-4 w-4 mr-2" />

@@ -13,6 +13,8 @@ const connectDB = require('./config/database');
 
 // Import routes
 const survivorStoriesRoutes = require('./routes/survivorStories');
+const redZoneRoutes = require('./routes/redZones'); // ✅ NEW
+const therapistsRoutes = require('./routes/therapists'); // NEW
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -58,6 +60,8 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/survivor-stories', survivorStoriesRoutes);
+app.use('/api/red-zones', redZoneRoutes); // ✅ NEW
+app.use('/api/therapists', therapistsRoutes); // NEW
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -68,6 +72,7 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       survivorStories: '/api/survivor-stories',
+      redZones: '/api/red-zones',
       survivorStoriesStats: '/api/survivor-stories/stats',
       survivorStoriesSearch: '/api/survivor-stories/search'
     }
@@ -104,7 +109,6 @@ const server = app.listen(PORT, () => {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`);
-  // Close server & exit process
   server.close(() => process.exit(1));
 });
 
@@ -115,4 +119,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-module.exports = app; 
+module.exports = app;
