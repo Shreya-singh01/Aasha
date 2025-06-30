@@ -11,6 +11,7 @@ import {
   AlertTriangle, Clock, MapPin, Phone, MessageSquare, Camera, User
 } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
+import { useToast } from '../../hooks/use-toast'
 
 interface Report {
   id: string
@@ -36,6 +37,12 @@ export default function ReportsPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all")
   const [filterPriority, setFilterPriority] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState("")
+  const { toast } = useToast()
+  const [ngos, setNGOs] = useState<any[]>([])
+  const [ngoLoading, setNGOLoading] = useState(false)
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [assigning, setAssigning] = useState(false)
+  const [selectedNGO, setSelectedNGO] = useState<any | null>(null)
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -145,6 +152,80 @@ export default function ReportsPage() {
     doc.save(`${report.id}_report.pdf`)
   }
 
+  const handleAssignTeamClick = async () => {
+    if (!selectedReport) return;
+    setNGOLoading(true);
+    setShowAssignModal(true);
+    setNGOs([]);
+    
+    try {
+      // Try to parse location for better matching
+      const locationParts = selectedReport.location.split(',').map(part => part.trim());
+      const city = locationParts[0];
+      const locality = locationParts.slice(1).join(', ');
+      
+      // First try structured query (city + locality)
+      let res = await fetch(`http://localhost:5005/api/ngos?city=${encodeURIComponent(city)}&locality=${encodeURIComponent(locality)}&available=true`);
+      let data = await res.json();
+      
+      // If no results, fall back to free-form location search
+      if (!data || data.length === 0) {
+        res = await fetch(`http://localhost:5005/api/ngos?location=${encodeURIComponent(selectedReport.location)}&available=true`);
+        data = await res.json();
+      }
+      
+      setNGOs(data);
+    } catch (err) {
+      toast({ title: 'Failed to fetch NGOs', description: String(err), variant: 'destructive' });
+    }
+    setNGOLoading(false);
+  };
+
+  const handleAssignToNGO = async (ngo: any) => {
+    if (!selectedReport) return;
+    setAssigning(true);
+    try {
+      const res = await fetch(`http://localhost:5005/api/ngos/${ngo._id}/assign-task`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId: selectedReport.id }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast({ title: `Task assigned to ${ngo.name}!` });
+        setShowAssignModal(false);
+        setSelectedReport(null);
+        // Refetch reports from backend to get updated status and assignedTo
+        const reportsRes = await fetch('http://localhost:5005/api/reports');
+        const reportsJson = await reportsRes.json();
+        if (reportsJson.success && Array.isArray(reportsJson.data)) {
+          const mappedReports: Report[] = reportsJson.data.map((r: any) => ({
+            id: r._id,
+            type: (r.incidentType || 'web'),
+            status: r.status || 'pending',
+            priority: r.urgency === 'urgent' ? 'critical' : (r.urgency || 'medium'),
+            submittedAt: r.createdAt || r.date || '',
+            location: r.location || '',
+            description: r.description || '',
+            submitterInfo: {
+              anonymous: r.contactInfo?.anonymous ?? true,
+              contact: r.contactInfo?.phone || r.contactInfo?.email || undefined
+            },
+            assignedTo: r.assignedTo || undefined,
+            evidence: Array.isArray(r.evidence) ? r.evidence : [],
+            aiConfidence: r.aiConfidence || undefined
+          }))
+          setReports(mappedReports)
+        }
+      } else {
+        toast({ title: 'Failed to assign task', description: data.error || 'Unknown error', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Failed to assign task', description: String(err), variant: 'destructive' });
+    }
+    setAssigning(false);
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Reports & Alerts</h1>
@@ -248,11 +329,41 @@ export default function ReportsPage() {
 
               {/* ✅ Added Buttons */}
               <div className="pt-4 flex justify-end gap-3">
-                <Button>Assign Team</Button>
+                <Button onClick={handleAssignTeamClick}>Assign Team</Button>
                 <Button variant="outline" onClick={() => handleExportPDF(selectedReport)}>
                   Export Report
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Assign Team Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowAssignModal(false)}>
+          <Card className="max-w-lg w-full" onClick={e => e.stopPropagation()}>
+            <CardHeader>
+              <CardTitle>Assign Team for {selectedReport?.location}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ngoLoading ? (
+                <p>Loading NGOs...</p>
+              ) : ngos.length === 0 ? (
+                <p>No available NGOs found for this location.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {ngos.map(ngo => (
+                    <li key={ngo._id} className="flex justify-between items-center">
+                      <span>{ngo.name} ({ngo.contact?.phone})</span>
+                      <Button size="sm" disabled={assigning} onClick={() => handleAssignToNGO(ngo)}>
+                        {assigning ? 'Assigning...' : 'Assign'}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Button variant="ghost" className="mt-4" onClick={() => setShowAssignModal(false)}>Cancel</Button>
             </CardContent>
           </Card>
         </div>

@@ -1,62 +1,3 @@
-// const express = require('express');
-// const multer = require('multer');
-// const path = require('path');
-// const Report = require('../models/Report');
-
-// const router = express.Router();
-
-// const upload = multer({
-//   storage: multer.memoryStorage() // or use diskStorage
-// });
-
-// // Set up multer for file upload
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'uploads/')
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + '-' + file.originalname)
-//   }
-// });
-
-// // const upload = multer({ storage });
-
-// // Submit report route
-// router.post('/submit', upload.array('evidence'), async (req, res) => {
-//   try {
-//     const {
-//       incidentType, location, date, time,
-//       description, victimCount, perpetratorCount,
-//       urgency, additionalNotes, contactInfo
-//     } = req.body;
-
-//     const evidence = req.files.map(file => file.filename);
-
-//     const report = new Report({
-//       incidentType,
-//       location,
-//       date,
-//       time,
-//       description,
-//       victimCount,
-//       perpetratorCount,
-//       urgency,
-//       contactInfo: JSON.parse(contactInfo),
-//       evidence,
-//       additionalNotes
-//     });
-
-//     await report.save();
-
-//     res.status(201).json({ message: 'Report submitted successfully', reportId: report._id });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Something went wrong!' });
-//   }
-// });
-
-// module.exports = router;
-
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -124,6 +65,7 @@ router.post('/submit', upload.array('evidence'), async (req, res) => {
       contactInfo: parsedContact,
       evidence,
       additionalNotes
+      // Do NOT set assignedTo or status here; let Mongoose defaults apply
     });
 
     await report.save();
@@ -150,6 +92,8 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Something went wrong while fetching reports!' });
   }
 });
+
+// NOTE: If you change the Report schema, restart the backend to apply new defaults.
 
 module.exports = router;
 
