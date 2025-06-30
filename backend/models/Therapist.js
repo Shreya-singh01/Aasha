@@ -12,4 +12,4 @@ const therapistSchema = new mongoose.Schema({
   notes: String
 }, { timestamps: true });
 
-module.exports = mongoose.model('Therapist', therapistSchema, 'therapists'); 
+module.exports = mongoose.model('Therapist', therapistSchema, 'therapists');
