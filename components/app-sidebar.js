@@ -39,7 +39,6 @@ const adminItems = [
   { title: "Reports & Alerts", url: "/dashboard/reports", icon: AlertTriangle },
   { title: "Mission Dashboard", url: "/dashboard/missions", icon: Shield },
   { title: "Therapy Network", url: "/dashboard/therapy-network", icon: Heart },
-  { title: "Database Management", url: "/dashboard/database", icon: Database },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
 ]
 
@@ -57,6 +56,7 @@ const guestItems = [
   { title: "Survivor Stories", url: "/dashboard/survivor-stories", icon: FileText },
   { title: "Red Zone Mapping", url: "/dashboard/red-zone-mapping", icon: MapPin },
   { title: "Submit Report", url: "/dashboard/submit-report", icon: MessageSquare },
+  { title: "Therapy Network", url: "/dashboard/therapy-network", icon: Heart },
   { title: "AI Chat Support", url: "/dashboard/ai-chat", icon: Bot },
   { title: "Get Help", url: "/dashboard/get-help", icon: HelpCircle },
 ]

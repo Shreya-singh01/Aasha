@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle, Users, MapPin, Heart, TrendingUp, Shield, Bot, HelpCircle } from "lucide-react"
+import Link from "next/link"
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -287,10 +288,10 @@ export default function DashboardPage() {
             <div className="grid gap-2">
               {quickActions.map((action, index) => (
                 <Button key={index} variant="ghost" className="justify-start h-auto p-3" asChild>
-                  <a href={action.href} className="flex items-center space-x-2">
+                  <Link href={action.href} className="flex items-center space-x-2">
                     <action.icon className="h-4 w-4" />
                     <span>{action.text}</span>
-                  </a>
+                  </Link>
                 </Button>
               ))}
             </div>

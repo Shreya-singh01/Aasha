@@ -12,6 +12,8 @@ import {
   Users,
   AlertTriangle,
   LogOut,
+  Bot,
+  HelpCircle,
 } from "lucide-react"
 
 import {
@@ -62,11 +64,6 @@ const adminItems = [
     icon: Heart,
   },
   {
-    title: "Database Management",
-    url: "/dashboard/database",
-    icon: Database,
-  },
-  {
     title: "Analytics",
     url: "/dashboard/analytics",
     icon: BarChart3,
@@ -106,9 +103,62 @@ const ngoItems = [
   },
 ]
 
+const guestItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+  },
+  {
+    title: "Survivor Stories",
+    url: "/dashboard/survivor-stories",
+    icon: FileText,
+  },
+  {
+    title: "Red Zone Mapping",
+    url: "/dashboard/red-zone-mapping",
+    icon: MapPin,
+  },
+  {
+    title: "Submit Report",
+    url: "/dashboard/submit-report",
+    icon: MessageSquare,
+  },
+  {
+    title: "Therapy Network",
+    url: "/dashboard/therapy-network",
+    icon: Heart,
+  },
+  {
+    title: "AI Chat Support",
+    url: "/dashboard/ai-chat",
+    icon: Bot,
+  },
+  {
+    title: "Get Help",
+    url: "/dashboard/get-help",
+    icon: HelpCircle,
+  },
+]
+
 export function AppSidebar() {
   const { user, logout } = useAuth()
-  const items = user?.role === "admin" ? adminItems : ngoItems
+  let items = ngoItems
+  switch (user?.role) {
+    case "admin":
+      items = adminItems
+      break
+    case "guest":
+      items = guestItems
+      break
+    case "ngo":
+    default:
+      items = ngoItems
+      break
+  }
+  // Debug log to check user and sidebar items
+  console.log("Sidebar user:", user)
+  console.log("Sidebar items:", items)
 
   return (
     <Sidebar>

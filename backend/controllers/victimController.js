@@ -586,6 +586,132 @@ const searchVictims = async (req, res) => {
   }
 };
 
+// @desc    Get cases over time (monthly)
+// @route   GET /api/victims/analytics/cases-over-time
+const getCasesOverTime = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+        count: { $sum: 1 }
+      } },
+      { $sort: { _id: 1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get cases by location (city)
+// @route   GET /api/victims/analytics/by-location
+const getCasesByLocation = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$location.city", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get age distribution
+// @route   GET /api/victims/analytics/age-distribution
+const getAgeDistribution = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $bucket: {
+        groupBy: "$basicInfo.age",
+        boundaries: [0, 12, 18, 25, 40, 60, 120],
+        default: "Unknown",
+        output: { count: { $sum: 1 } }
+      } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get gender distribution
+// @route   GET /api/victims/analytics/gender-distribution
+const getGenderDistribution = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$basicInfo.gender", count: { $sum: 1 } } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get cases by NGO
+// @route   GET /api/victims/analytics/by-ngo
+const getCasesByNGO = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$ngoAssignment.ngoName", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get cases by criticality level
+// @route   GET /api/victims/analytics/by-criticality
+const getCasesByCriticality = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$criticality.level", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get cases by recruitment method
+// @route   GET /api/victims/analytics/by-recruitment
+const getCasesByRecruitment = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$traffickingDetails.recruitmentMethod", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get cases by nationality
+// @route   GET /api/victims/analytics/by-nationality
+const getCasesByNationality = async (req, res) => {
+  try {
+    const data = await Victim.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: "$basicInfo.nationality", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createVictim,
   getVictims,
@@ -597,5 +723,13 @@ module.exports = {
   getVictimsByCriticality,
   getVictimsByNGO,
   getVictimStats,
-  searchVictims
+  searchVictims,
+  getCasesOverTime,
+  getCasesByLocation,
+  getAgeDistribution,
+  getGenderDistribution,
+  getCasesByNGO,
+  getCasesByCriticality,
+  getCasesByRecruitment,
+  getCasesByNationality,
 }; 
