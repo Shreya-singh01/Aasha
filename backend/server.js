@@ -81,6 +81,10 @@ app.get('/', (req, res) => {
 const reportRoutes = require('./routes/reports');
 app.use('/api/reports', reportRoutes);
 
+// Add the new victims route
+const victimRoutes = require('./routes/victims');
+app.use('/api/victims', victimRoutes);
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

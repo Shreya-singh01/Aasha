@@ -10,7 +10,7 @@ const reportSchema = new mongoose.Schema({
   perpetratorCount: Number,
   urgency: {
     type: String,
-    enum: ['low', 'medium', 'high', 'urgent']
+    enum: ['low', 'medium', 'high', 'urgent', 'critical']
   },
   contactInfo: {
     name: String,
