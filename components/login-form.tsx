@@ -1,46 +1,62 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
-import { useAuth } from "./auth-provider"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useRouter } from "next/navigation"
+import { Link } from "react-router-dom"
 
-export function LoginForm() {
+export function SignupForm() {
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    const success = await login(email, password)
-    if (success) {
-      router.push("/dashboard")
-    } else {
-      setError("Invalid credentials. Please try again.")
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed")
+      }
+
+      // Redirect to login after signup
+      router.push("/login")
+    } catch (err) {
+      setError(err.message)
     }
+
     setIsLoading(false)
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>Access the anti-trafficking platform</CardDescription>
+        <CardTitle>Create Account</CardTitle>
+        <CardDescription>Sign up to access the anti-trafficking platform</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Full Name</Label>
+            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -61,13 +77,15 @@ export function LoginForm() {
             </Alert>
           )}
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
-        <div className="mt-4 text-sm text-gray-600">
-          <p>Demo credentials:</p>
-          <p>Admin: admin@platform.com / password123</p>
-          <p>NGO: ngo@rescue.org / password123</p>
+
+        <div className="mt-4 text-sm text-gray-600 text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Sign In
+          </Link>
         </div>
       </CardContent>
     </Card>

@@ -7,14 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Alert, AlertDescription } from '../components/ui/alert'
+import { SignupForm } from '../components/signup-form'
 
 function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [loginType, setLoginType] = useState("credentials")
-  const { login, loginAsGuest } = useAuth()
+  const { login, loginAsGuest, error, clearError } = useAuth()
   const navigate = useNavigate()
 
   if (!open) return null
@@ -22,14 +22,12 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
+    clearError()
 
     const success = await login(email, password)
     if (success) {
       onClose()
       navigate("/dashboard")
-    } else {
-      setError("Invalid credentials. Please try again.")
     }
     setIsLoading(false)
   }
@@ -151,6 +149,7 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 export default function LandingPage() {
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showSignupModal, setShowSignupModal] = useState(false)
 
   const features = [
     {
@@ -220,9 +219,14 @@ export default function LandingPage() {
             <a href="#about" className="text-gray-600 hover:text-gray-900 transition-colors">
               About
             </a>
-            <Button variant="outline" onClick={() => setShowLoginModal(true)}>
-              Sign In
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button variant="outline" onClick={() => setShowLoginModal(true)}>
+                Sign In
+              </Button>
+              <Button onClick={() => setShowSignupModal(true)}>
+                Sign Up
+              </Button>
+            </div>
           </nav>
         </div>
       </header>
@@ -248,6 +252,14 @@ export default function LandingPage() {
               onClick={() => setShowLoginModal(true)}
             >
               Access Platform
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-8 py-3 bg-transparent"
+              onClick={() => setShowSignupModal(true)}
+            >
+              Join Us
             </Button>
             <Button
               size="lg"
@@ -320,13 +332,23 @@ export default function LandingPage() {
             Together, we can create a world where every person is free from exploitation. Access our platform to
             contribute to this vital mission.
           </p>
-          <Button
-            size="lg"
-            className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3"
-            onClick={() => setShowLoginModal(true)}
-          >
-            Get Started Today
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3"
+              onClick={() => setShowLoginModal(true)}
+            >
+              Get Started Today
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-8 py-3 border-white text-white hover:bg-white hover:text-gray-900"
+              onClick={() => setShowSignupModal(true)}
+            >
+              Create Account
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -349,6 +371,7 @@ export default function LandingPage() {
       </footer>
 
       <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <SignupForm open={showSignupModal} onClose={() => setShowSignupModal(false)} />
     </div>
   )
 } 
