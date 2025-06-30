@@ -63,7 +63,7 @@ export default function SubmitReport() {
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent as keyof ReportForm],
+          ...((prev[parent as keyof ReportForm] || {}) as object),
           [child]: value
         }
       }))
@@ -83,16 +83,6 @@ export default function SubmitReport() {
     }))
   }
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   setIsSubmitting(true)
-    
-  //   // Simulate API call
-  //   await new Promise(resolve => setTimeout(resolve, 2000))
-    
-  //   setIsSubmitting(false)
-  //   setSubmitted(true)
-  // } //////by Vidhiiiiiiiii
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()

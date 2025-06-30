@@ -8,9 +8,10 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Anti-Trafficking Platform",
-  description: "Comprehensive platform for combating human trafficking",
-    generator: 'v0.dev'
+  title: "Aasha: Hope for the forgotten",
+  description:
+    "Comprehensive platform for combating human trafficking through survivor-centered support and coordinated response",
+    generator: 'self-made'
 }
 
 export default function RootLayout({
