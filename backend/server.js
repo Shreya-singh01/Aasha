@@ -15,6 +15,7 @@ const connectDB = require('./config/database');
 const survivorStoriesRoutes = require('./routes/survivorStories');
 const redZoneRoutes = require('./routes/redZones'); // ✅ NEW
 const therapistsRoutes = require('./routes/therapists'); // NEW
+const ngoRoutes = require('./routes/ngos');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -62,6 +63,7 @@ app.get('/health', (req, res) => {
 app.use('/api/survivor-stories', survivorStoriesRoutes);
 app.use('/api/red-zones', redZoneRoutes); // ✅ NEW
 app.use('/api/therapists', therapistsRoutes); // NEW
+app.use('/api/ngos', ngoRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
