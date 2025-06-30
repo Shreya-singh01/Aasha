@@ -50,11 +50,6 @@ const adminItems = [
     icon: Heart,
   },
   {
-    title: "Database Management",
-    url: "/dashboard/database",
-    icon: Database,
-  },
-  {
     title: "Analytics",
     url: "/dashboard/analytics",
     icon: BarChart3,
