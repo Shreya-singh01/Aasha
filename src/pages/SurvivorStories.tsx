@@ -185,50 +185,69 @@ export default function SurvivorStories() {
       {/* Add New Story Form Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg space-y-4 relative">
-            <button type="button" className="absolute top-2 right-2" onClick={() => setShowAddForm(false)}>
-              <X className="w-5 h-5" />
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-[95vw] max-w-2xl space-y-4 relative"
+            style={{ maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            <button
+              type="button"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+              onClick={() => setShowAddForm(false)}
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-bold mb-2">Add New Survivor Story</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Add New Survivor Story</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium">Rescue Date</label>
+                <label className="block text-sm font-medium mb-1">Rescue Date</label>
                 <Input type="date" value={newStory.rescueDate} onChange={e => handleInputChange('rescueDate', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Location</label>
+                <label className="block text-sm font-medium mb-1">Location</label>
                 <Input value={newStory.location} onChange={e => handleInputChange('location', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Exploitation Type</label>
-                <select value={newStory.exploitationType} onChange={e => handleInputChange('exploitationType', e.target.value)} className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm" required>
+                <label className="block text-sm font-medium mb-1">Exploitation Type</label>
+                <select
+                  value={newStory.exploitationType}
+                  onChange={e => handleInputChange('exploitationType', e.target.value)}
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  required
+                >
                   <option value="sex">Sex Trafficking</option>
                   <option value="labor">Labor Trafficking</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Duration</label>
+                <label className="block text-sm font-medium mb-1">Duration</label>
                 <Input value={newStory.duration} onChange={e => handleInputChange('duration', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Current Status</label>
+                <label className="block text-sm font-medium mb-1">Current Status</label>
                 <Input value={newStory.currentStatus} onChange={e => handleInputChange('currentStatus', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Aspirations</label>
+                <label className="block text-sm font-medium mb-1">Aspirations</label>
                 <Input value={newStory.aspirations} onChange={e => handleInputChange('aspirations', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Living Conditions</label>
+                <label className="block text-sm font-medium mb-1">Living Conditions</label>
                 <Input value={newStory.livingConditions} onChange={e => handleInputChange('livingConditions', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Age</label>
+                <label className="block text-sm font-medium mb-1">Age</label>
                 <Input type="number" value={newStory.age} onChange={e => handleInputChange('age', Number(e.target.value))} required min={0} max={120} />
               </div>
               <div>
-                <label className="block text-sm font-medium">Gender</label>
-                <select value={newStory.gender} onChange={e => handleInputChange('gender', e.target.value)} className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm" required>
+                <label className="block text-sm font-medium mb-1">Gender</label>
+                <select
+                  value={newStory.gender}
+                  onChange={e => handleInputChange('gender', e.target.value)}
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  required
+                >
                   <option value="">Select Gender</option>
                   <option value="Female">Female</option>
                   <option value="Male">Male</option>
@@ -237,12 +256,12 @@ export default function SurvivorStories() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Source</label>
+                <label className="block text-sm font-medium mb-1">Source</label>
                 <Input value={newStory.source} onChange={e => handleInputChange('source', e.target.value)} required />
               </div>
             </div>
             {postError && <div className="text-red-500 text-sm">{postError}</div>}
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-4 justify-center">
               <Button type="submit" disabled={posting}>{posting ? 'Adding...' : 'Add Story'}</Button>
               <Button type="button" variant="secondary" onClick={resetForm}>Reset</Button>
               <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>Cancel</Button>
