@@ -1,5 +1,5 @@
 # Aasha 🌸  
-*Empowering Change, Ending Trafficking Forever*
+*Hope For The Forgotten*
 
 ---
 ## 👩‍💻 Collaborators
