@@ -2,7 +2,6 @@
 *Empowering Change, Ending Trafficking Forever*
 
 ---
-
 ## 👩‍💻 Collaborators
 <table>
   <tr>
@@ -12,10 +11,20 @@
         <sub><b>Sai Esha Mittal</b></sub>
       </a>
     </td>
-    <!-- Add more collaborators here if needed -->
+    <td align="center">
+      <a href="https://github.com/Shreya-singh01">
+        <img src="https://avatars.githubusercontent.com/u/106538067?v=4" width="80px;" alt="Shreya Singh"/><br />
+        <sub><b>Shreya Singh</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/vidhi2919">
+        <img src="https://avatars.githubusercontent.com/u/122304547?v=4" width="80px;" alt="Vidhi Arora"/><br />
+        <sub><b>Vidhi Arora</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
-
 ---
 
 <!-- 🚀 Live Demo & Screenshots -->
