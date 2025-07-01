@@ -103,11 +103,11 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
-              <div className="text-sm text-gray-600 space-y-1">
+              {/* <div className="text-sm text-gray-600 space-y-1">
                 <p><strong>Demo credentials:</strong></p>
                 <p>Admin: admin@guardian.com / password123</p>
                 <p>NGO: ngo@rescue.org / password123</p>
-              </div>
+              </div> */}
             </form>
           ) : (
             <div className="space-y-4">
@@ -205,8 +205,8 @@ export default function LandingPage() {
           <div className="flex items-center space-x-2">
             <Shield className="h-8 w-8 text-blue-600" />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Guardian Angel</h1>
-              <p className="text-sm text-blue-600 font-medium">Alliance</p>
+              <h1 className="text-xl font-bold text-gray-900">Aasha</h1>
+              <p className="text-sm text-blue-600 font-medium">Hope for the Forgotten</p>
             </div>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
@@ -238,8 +238,8 @@ export default function LandingPage() {
             <Shield className="h-16 w-16 text-blue-600" />
           </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Guardian Angel
-            <span className="block text-blue-600">Alliance</span>
+            Aasha
+            <span className="block text-blue-600">Anti-Trafficking Platform</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
             A comprehensive digital platform designed to combat human trafficking through survivor-centered support,
@@ -359,8 +359,8 @@ export default function LandingPage() {
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Shield className="h-6 w-6 text-blue-600" />
               <div>
-                <div className="font-bold text-gray-900">Guardian Angel Alliance</div>
-                <div className="text-sm text-gray-600">© 2024 Guardian Angel Alliance. All rights reserved.</div>
+                <div className="font-bold text-gray-900"> Aasha: Hope for the Forgotten</div>
+                <div className="text-sm text-gray-600">© 2024 Aasha. All rights reserved.</div>
               </div>
             </div>
             <div className="text-sm text-gray-600 text-center md:text-right">
