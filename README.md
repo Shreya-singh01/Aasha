@@ -91,4 +91,15 @@ Aasha is a full-stack anti-human trafficking platform designed to empower change
 ```bash
 git clone https://github.com/saieshamittal/Aasha.git
 cd Aasha
-yarn install
+yarn install 
+
+### Usage
+```bash
+# Start the backend server
+cd backend
+node server.js
+
+# In a separate terminal, start the frontend
+cd ../frontend
+yarn dev
+
