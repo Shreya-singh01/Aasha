@@ -374,4 +374,4 @@ export default function LandingPage() {
       <SignupForm open={showSignupModal} onClose={() => setShowSignupModal(false)} />
     </div>
   )
-}
+} 
