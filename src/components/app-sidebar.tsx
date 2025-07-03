@@ -49,11 +49,11 @@ const adminItems = [
     url: "/dashboard/therapy-network",
     icon: Heart,
   },
-  {
-    title: "Analytics",
-    url: "/dashboard/analytics",
-    icon: BarChart3,
-  },
+  // {
+  //   title: "Analytics",
+  //   url: "/dashboard/analytics",
+  //   icon: BarChart3,
+  // },
 ]
 
 const ngoItems = [

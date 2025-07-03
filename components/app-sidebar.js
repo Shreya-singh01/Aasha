@@ -39,7 +39,7 @@ const adminItems = [
   { title: "Reports & Alerts", url: "/dashboard/reports", icon: AlertTriangle },
   { title: "Mission Dashboard", url: "/dashboard/missions", icon: Shield },
   { title: "Therapy Network", url: "/dashboard/therapy-network", icon: Heart },
-  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  // { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
 ]
 
 const ngoItems = [
